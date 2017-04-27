@@ -8,7 +8,7 @@ import java.util.Set;
  * @author Ricardo Alberto Harari - ricardo.harari@gmail.com
  *
  */
-public class MainAG {
+public class HeuristicaAlgoritmoGenetico {
 
     private static final int MAX_FITNESS = 8;
     private static Random randomico = new Random();
