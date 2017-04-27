@@ -5,46 +5,57 @@
 
 import java.util.Random;
 
-public class MainForcaBruta2 {
+public class BackTracking2 {
 
-    private static int diagonal_posistiva[];
+    private static int[] diagonal_positiva;
     private static int diagonal_negativa[];
     private static int rainhas[];
-    private static int numeroRainhas;
-    private static int numeroDiagonais;
+    private static int qtdeRainha;
+    private static int qtdeDiagonal;
 
     private static void inicializaTabuleiro() {
-        Random aleatorio = new Random();
+        
+        //Define o numero de diagonais apartir do numero de rainhas
+        qtdeDiagonal = (qtdeRainha * 2) - 1;
+      
+        //Cria o vetor das rainhas
+        rainhas = new int[qtdeRainha];
+        //Cria o vetor das diagonais positivas    
+        diagonal_positiva = new int[qtdeDiagonal];
+        //Cria o vetor das diagonais negativas 
+        diagonal_negativa = new int[qtdeDiagonal];
 
-        rainhas = new int[numeroRainhas];
-        diagonal_posistiva = new int[numeroDiagonais];
-        diagonal_negativa = new int[numeroDiagonais];
-
-        for (int i = 0; i < numeroRainhas; i++) {
+        //Adiciona um numero para cada rainha no vetor de  forma sequencial
+        for (int i = 0; i < qtdeRainha; i++) {
             rainhas[i] = i;
         }
 
-        for (int count = 0; count < numeroDiagonais; count++) {
-            double count1 = count;
-            if (count % 2 == 0) {
-                diagonal_posistiva[count] = 1;
+        //Percorre as diagonais do tabuleiro
+        for (int indiceDiagonal = 0; indiceDiagonal < qtdeDiagonal; indiceDiagonal++) {
+            double count1 = indiceDiagonal;
+            
+            //Verifica se a diagonal é par
+            if (indiceDiagonal % 2 == 0) {
+                //Diagonal de indice par recebe 1
+                diagonal_positiva[indiceDiagonal] = 1;
             } else {
-                diagonal_posistiva[count] = 0;
+                //Diagonal de indice impar recebe 0
+                diagonal_positiva[indiceDiagonal] = 0;
             }
-            int count2 = count;
-            if (count1 == ((numeroDiagonais) / 2)) {
-                count1 = Math.ceil(count1);
-                count2 = (int) count1;
-                diagonal_negativa[count2] = numeroRainhas;
+            //Verifica se o indice é a diagonal principal
+            if (indiceDiagonal == ((qtdeDiagonal) / 2)) {
+                diagonal_negativa[indiceDiagonal] = qtdeRainha;
             } else {
-                diagonal_negativa[count2] = 0;
+                diagonal_negativa[indiceDiagonal] = 0;
             }
         }
-
-        for (int i = 0; i < numeroRainhas; ++i) {
-            troca(aleatorio.nextInt(numeroRainhas), aleatorio.nextInt(numeroRainhas));
-        }
-
+        
+        //Distribui as rainhas de forma aleatoria ou utiliza elas em sequencia
+        //Random aleatorio = new Random();
+        //for (int i = 0; i < numeroRainhas; ++i) {
+            //troca(aleatorio.nextInt(numeroRainhas), aleatorio.nextInt(numeroRainhas));
+        //}
+        
     }
 
     private static void troca(int Coluna01, int Coluna02) {
@@ -57,24 +68,24 @@ public class MainForcaBruta2 {
 
         //********************* Primeira Rainha ******************************
         Diagonais_Pos_Aux = linha01 + Coluna01;
-        Diagonais_Neg_Aux = (Coluna01 - linha01) + (numeroRainhas - 1);
-        diagonal_posistiva[Diagonais_Pos_Aux] = diagonal_posistiva[Diagonais_Pos_Aux] - 1;
+        Diagonais_Neg_Aux = (Coluna01 - linha01) + (qtdeRainha - 1);
+        diagonal_positiva[Diagonais_Pos_Aux] = diagonal_positiva[Diagonais_Pos_Aux] - 1;
         diagonal_negativa[Diagonais_Neg_Aux] = diagonal_negativa[Diagonais_Neg_Aux] - 1;
 
         Diagonais_Pos_Aux = linha02 + Coluna01;
-        Diagonais_Neg_Aux = ((Coluna01 - linha02) + (numeroRainhas - 1));
-        diagonal_posistiva[Diagonais_Pos_Aux] = diagonal_posistiva[Diagonais_Pos_Aux] + 1;
+        Diagonais_Neg_Aux = ((Coluna01 - linha02) + (qtdeRainha - 1));
+        diagonal_positiva[Diagonais_Pos_Aux] = diagonal_positiva[Diagonais_Pos_Aux] + 1;
         diagonal_negativa[Diagonais_Neg_Aux] = diagonal_negativa[Diagonais_Neg_Aux] + 1;
 
         //******************** Segunda Rainha ********************************
         Diagonais_Pos_Aux = linha02 + Coluna02;
-        Diagonais_Neg_Aux = (Coluna02 - linha02) + (numeroRainhas - 1);
-        diagonal_posistiva[Diagonais_Pos_Aux] = diagonal_posistiva[Diagonais_Pos_Aux] - 1;
+        Diagonais_Neg_Aux = (Coluna02 - linha02) + (qtdeRainha - 1);
+        diagonal_positiva[Diagonais_Pos_Aux] = diagonal_positiva[Diagonais_Pos_Aux] - 1;
         diagonal_negativa[Diagonais_Neg_Aux] = diagonal_negativa[Diagonais_Neg_Aux] - 1;
 
         Diagonais_Pos_Aux = linha01 + Coluna02;
-        Diagonais_Neg_Aux = (Coluna02 - linha01) + (numeroRainhas - 1);
-        diagonal_posistiva[Diagonais_Pos_Aux] = diagonal_posistiva[Diagonais_Pos_Aux] + 1;
+        Diagonais_Neg_Aux = (Coluna02 - linha01) + (qtdeRainha - 1);
+        diagonal_positiva[Diagonais_Pos_Aux] = diagonal_positiva[Diagonais_Pos_Aux] + 1;
         diagonal_negativa[Diagonais_Neg_Aux] = diagonal_negativa[Diagonais_Neg_Aux] + 1;
 
         //******************* Substitui rainhas ********************************
@@ -84,7 +95,7 @@ public class MainForcaBruta2 {
 
     private static Boolean verificaAtaquesRainhas(int Coluna) {
         Boolean Ataques = false;
-        if (diagonal_posistiva[procuraDiagonalPos(Coluna)] > 1) {
+        if (diagonal_positiva[procuraDiagonalPos(Coluna)] > 1) {
             return true;
         }
         if (diagonal_negativa[procuraDiagonalNeg(Coluna)] > 1) {
@@ -101,29 +112,29 @@ public class MainForcaBruta2 {
 
     private static int procuraDiagonalNeg(int Coluna) {
         int diagonal = -1;
-        diagonal = (Coluna - rainhas[Coluna]) + (numeroRainhas - 1);
+        diagonal = (Coluna - rainhas[Coluna]) + (qtdeRainha - 1);
         return diagonal;
     }
 
     private static int verificaAtaques() {
         int ataques = 0;
-        for (int Diagonal_count = 0; Diagonal_count < numeroDiagonais; Diagonal_count++) {
-            if (diagonal_posistiva[Diagonal_count] > 1) {
-                ataques = ataques + diagonal_posistiva[Diagonal_count] - 1;
+        for (int indiceDiagonal = 0; indiceDiagonal < qtdeDiagonal; indiceDiagonal++) {
+            if (diagonal_positiva[indiceDiagonal] > 1) {
+                ataques = ataques + diagonal_positiva[indiceDiagonal] - 1;
             }
-            if (diagonal_negativa[Diagonal_count] > 1) {
-                ataques = ataques + diagonal_negativa[Diagonal_count] - 1;
+            if (diagonal_negativa[indiceDiagonal] > 1) {
+                ataques = ataques + diagonal_negativa[indiceDiagonal] - 1;
             }
         }
         return ataques;
     }
 
-    private static Boolean test() {
-        for (int Diagonal_count = 0; Diagonal_count < numeroDiagonais; Diagonal_count++) {
-            if (diagonal_posistiva[Diagonal_count] > 1) {                
+    private static Boolean testar() {
+        for (int indiceDiagonal = 0; indiceDiagonal < qtdeDiagonal; indiceDiagonal++) {
+            if (diagonal_positiva[indiceDiagonal] > 1) {                
                 return false;
             }
-            if (diagonal_negativa[Diagonal_count] > 1) {
+            if (diagonal_negativa[indiceDiagonal] > 1) {
                 return false;
             }
         }
@@ -136,9 +147,8 @@ public class MainForcaBruta2 {
         int executouTroca = 1;
         while (executouTroca != 0) {
             executouTroca = 0;
-            for (int coluna01 = 0; (coluna01 < numeroRainhas - 1); coluna01++) {
-                int coluna02;
-                for (coluna02 = coluna01 + 1; (coluna02 < numeroRainhas); coluna02++) {
+            for (int coluna01 = 0; (coluna01 < qtdeRainha - 1); coluna01++) {                
+                for (int coluna02 = coluna01 + 1; (coluna02 < qtdeRainha); coluna02++) {
                     if ((verificaAtaquesRainhas(coluna01) == true) || (verificaAtaquesRainhas(coluna02) == true)) {
                         colisoes01 = verificaAtaques();
                         troca(coluna01, coluna02);
@@ -155,14 +165,14 @@ public class MainForcaBruta2 {
                 }
             }
         }
-        if (test()) {
+        if (testar()) {
             return;
         } 
     }
 
     private static void imprime() {
-        for (int i = 0; i < numeroRainhas; i++) {
-            for (int i1 = 0; i1 < numeroRainhas; i1++) {
+        for (int i = 0; i < qtdeRainha; i++) {
+            for (int i1 = 0; i1 < qtdeRainha; i1++) {
                 if (rainhas[i1] == i) {
                     System.out.print(" " + i + " ");
                 } else {
@@ -178,17 +188,16 @@ public class MainForcaBruta2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        long tempo, tempoFinal = 0;
-        numeroRainhas = 8;
-        numeroDiagonais = (numeroRainhas * 2) - 1;
+        long tempo=0, tempoFinal = 0;
+        qtdeRainha = 4;
         
         inicializaTabuleiro();
         tempo = System.currentTimeMillis();
         Controlador();
         tempo = System.currentTimeMillis() - tempo;
-        tempoFinal += tempo;        
+        tempoFinal = tempoFinal + tempo;        
         imprime();
             
-        System.out.println("O tempo para " + numeroRainhas + " rainhas  é " + tempoFinal + " milisegundos");
+        System.out.println("O tempo para " + qtdeRainha + " rainhas  é " + tempoFinal + " milisegundos");
     }
 }

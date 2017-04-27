@@ -8,7 +8,7 @@
  * http://www.vision.ime.usp.br/~pmiranda/mac122_2s14/aulas/aula20/aula20.html
  * @author Osmar
  */
-public class MainForcaBruta1 {
+public class BackTracking1 {
 
     static int numeroSolucao = 0;
     
@@ -19,14 +19,14 @@ public class MainForcaBruta1 {
         v[j] = auxiliar;
     }
 
-    public static boolean solucaoValida(int[] linhas, int qtdeRainha) {
+    public static boolean solucaoValida(int[] rainhas, int qtdeRainha) {
         int i;
         int x, y;
         int xx, yy;
 
         for (i = 0; i < qtdeRainha; i++) {
             x = i;
-            y = linhas[i];
+            y = rainhas[i];
 
             xx = x;
             yy = y;
@@ -36,7 +36,7 @@ public class MainForcaBruta1 {
                 if (xx > qtdeRainha-1 || yy < 0) {
                     break;
                 }
-                if (yy == linhas[xx]) {
+                if (yy == rainhas[xx]) {
                     return false;
                 }
             }
@@ -50,7 +50,7 @@ public class MainForcaBruta1 {
                     break;
                 }
 
-                if (yy == linhas[xx]) {
+                if (yy == rainhas[xx]) {
                     return false;
                 }
             }
@@ -58,7 +58,7 @@ public class MainForcaBruta1 {
         return true;
     }
 
-    public static void imprimeSolucao(int linhas[], int qtdeRainha) {
+    public static void imprimeSolucao(int rainhas[], int qtdeRainha) {
         String[][] tabuleiro = new String[qtdeRainha][qtdeRainha];
         int i, j;
         int x, y;
@@ -71,10 +71,13 @@ public class MainForcaBruta1 {
             }
         }
         for (i = 0; i < qtdeRainha; i++) {
+            // coluna da rainha
             x = i;
-            y = linhas[i];
+            // o numero da rainha define a posicao da linha
+            y = rainhas[i];
             tabuleiro[y][x] = y+"";
         }
+        //String da saida dos dados do tabuleiro
         String linha = "";
         for (i = 0; i < qtdeRainha; i++) {
             for (j = 0; j < qtdeRainha; j++) {
@@ -85,28 +88,29 @@ public class MainForcaBruta1 {
         System.out.println(linha);
     }
 
-    public static void testaPermutacoes(int[] linhas, int qtdeRainha, int k) {
+    public static void testaPermutacoes(int[] rainhas, int qtdeRainha, int k) {
         int i;
         if (k == qtdeRainha) {
-            if (solucaoValida(linhas, qtdeRainha)) {
-                imprimeSolucao(linhas, qtdeRainha);
+            if (solucaoValida(rainhas, qtdeRainha)) {
+                imprimeSolucao(rainhas, qtdeRainha);
             }
         } else {
             for (i = k; i < qtdeRainha; i++) {
-                troca(linhas, k, i);
-                testaPermutacoes(linhas, qtdeRainha, k + 1);
-                troca(linhas, i, k);
+                troca(rainhas, k, i);
+                testaPermutacoes(rainhas, qtdeRainha, k + 1);
+                troca(rainhas, i, k);
             }
         }
     }
 
     public static void solucoes8Rainhas(int qtdeRainha) {
-        int[] linhas = new int[qtdeRainha];
+        int[] rainhas = new int[qtdeRainha];
         int i;
+        //Adiciona um numero para cada rainha no vetor de forma sequencial
         for (i = 0; i < qtdeRainha; i++) {
-            linhas[i] = i;
+            rainhas[i] = i;
         }
-        testaPermutacoes(linhas, qtdeRainha, 0);
+        testaPermutacoes(rainhas, qtdeRainha, 0);
     }
 
     /**
@@ -114,7 +118,7 @@ public class MainForcaBruta1 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        int qtdeRainha = 8;
+        int qtdeRainha = 4;
         solucoes8Rainhas(qtdeRainha);
     }
 
