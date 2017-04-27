@@ -1,7 +1,8 @@
+
 /**
  *
  *  http://www.ic.unicamp.br/~zanoni/mc102/2013-1s/aulas/aula22.pdf
- * 
+ *
  * @author osmar
  *
  * Forca bruta por permutacao
@@ -12,33 +13,44 @@ public class ForcaBrutaBackTracking {
     private static int solucoes;
 
     /**
-     * Valida o vetor de rainhas
-     * 
+     * Retorna true se a colocação da rainha rainhas[n] não entrar em conflito
+     * com outras rainhas de rainhas[0] a rainhas[qtdeRainha-1]
+     *
      * @param qtdeRainha
      * @param rainhas
-     * @return 
-     */    
-    public static boolean valida(int qtdeRainha, int[] rainhas) {        
+     * @return
+     */
+    public static boolean valida(int qtdeRainha, int[] rainhas) {
         //Percorre o vetor de rainhas
-        for (int i = 0; i < qtdeRainha; i++) 
-             /* se duas rainhas na mesma coluna ... */ {
-            if ((rainhas[i] == rainhas[qtdeRainha])
-                    || /* ... ou duas rainhas na mesma diagonal */ 
-                    (Math.abs(rainhas[i] - rainhas[qtdeRainha]) == (qtdeRainha - i))) {
+        for (int i = 0; i < qtdeRainha; i++) {
+            //Verifica se a rainha esta na mesma coluna
+            if (rainhas[i] == rainhas[qtdeRainha]) {
                 return false;
-                /* solucao invalida */
             }
+            //Verifica se a rainha esta diagonal principal
+            if ((rainhas[i] - rainhas[qtdeRainha]) == (qtdeRainha - i)) {
+                return false;
+            }
+            //Verifica se a rainha esta na diagonal secundaria
+            if ((rainhas[qtdeRainha] - rainhas[i]) == (qtdeRainha - i)) {
+                return false;
+            }
+
+            // Código alternativo, pois faz verificao da diagonal principal e secundaria simultaneamente usando abs para tirar o sinal*/
+            //if ( Math.abs(rainhas[i] - rainhas[qtdeRainha]) == (qtdeRainha - i)) {
+            // return false;                
+            //}
         }
         return true;
         /* solucao valida */
     }
-    
+
     /**
      * Realiza o backTracking para encontrar as posicoes da rainha
-     * 
+     *
      * @param qtdeRainha
      * @param rainhas
-     * @param k 
+     * @param k
      */
     public static void backTracking(int qtdeRainha, int[] rainhas, int k) {
         int i;
@@ -57,11 +69,11 @@ public class ForcaBrutaBackTracking {
 
     /**
      * Imprime o tabuleiro com as rainhas
-     * 
+     *
      * @param qtdeRainha
-     * @param rainhas 
+     * @param rainhas
      */
-     private static void imprime(int qtdeRainha, int rainhas[]) {
+    private static void imprime(int qtdeRainha, int rainhas[]) {
         for (int i = 0; i < qtdeRainha; i++) {
             for (int i1 = 0; i1 < qtdeRainha; i1++) {
                 if (rainhas[i1] == i) {
@@ -72,15 +84,15 @@ public class ForcaBrutaBackTracking {
             }
             System.out.println(" ");
         }
-        System.out.println(" ");   
-    }    
-    
+        System.out.println(" ");
+    }
+
     public static void main(String args[]) {
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4,6};
+        int qtdeRainhasTeste[] = {4, 6};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5,10};
+        int repeticoesTeste[] = {5, 10};
 
         //Realiza os testes para as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
@@ -109,8 +121,8 @@ public class ForcaBrutaBackTracking {
                     /* se um elemento i estiver em uso, entao used[i] == 1, caso contrario, used[i] == 0. */
                     for (int i = 0; i < qtdeRainha; i++) {
                         usado[i] = 0;
-                    }                    
-                   backTracking(qtdeRainha, rainhas, 0);
+                    }
+                    backTracking(qtdeRainha, rainhas, 0);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
