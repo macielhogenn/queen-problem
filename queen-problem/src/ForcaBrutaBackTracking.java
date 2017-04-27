@@ -1,5 +1,7 @@
 /**
  *
+ *  http://www.ic.unicamp.br/~zanoni/mc102/2013-1s/aulas/aula22.pdf
+ * 
  * @author osmar
  *
  * Forca bruta por permutacao
