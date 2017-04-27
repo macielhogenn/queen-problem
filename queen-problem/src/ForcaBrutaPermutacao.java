@@ -1,4 +1,3 @@
-
 /**
  *
  * @author osmar
@@ -8,6 +7,9 @@
  */
 public class ForcaBrutaPermutacao {
 
+    /**
+     * Acumula a quantidade de solucoes encontradas
+     */
     private static int solucoes;
 
     /**
@@ -52,6 +54,14 @@ public class ForcaBrutaPermutacao {
         return true;
     }
 
+    /**
+     * Realiza a pertumacao de todos os resultados
+     *
+     * @param qtdeRainha
+     * @param rainhas
+     * @param usado
+     * @param k
+     */
     public static void permutacao(int qtdeRainha, int rainhas[], int[] usado, int k) {
         int i;
         if (k == qtdeRainha) {
@@ -72,6 +82,12 @@ public class ForcaBrutaPermutacao {
         }
     }
 
+    /**
+     * Imprime o tabuleiro com as rainhas
+     *
+     * @param qtdeRainha
+     * @param rainhas
+     */
     private static void imprime(int qtdeRainha, int rainhas[]) {
         for (int i = 0; i < qtdeRainha; i++) {
             for (int i1 = 0; i1 < qtdeRainha; i1++) {
@@ -87,11 +103,10 @@ public class ForcaBrutaPermutacao {
     }
 
     public static void main(String args[]) {
-
         //Especifica a quantidade de rainhas serem testadas
         int qtdeRainhasTeste[] = {4, 6};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5,10};
+        int repeticoesTeste[] = {5, 10};
 
         //Testa as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
@@ -124,9 +139,12 @@ public class ForcaBrutaPermutacao {
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
+                    //Acumula o tempo do teste ao tempo final
                     tempoFinal = tempoFinal + tempo;
                 }
-                System.out.println("O tempo para " + qtdeRainha + " rainhas, executando " + repeticoesTeste[qtdeT] + " é vezes é " + tempoFinal / repeticoesTeste[qtdeT] + " milisegundos com " + solucoes / repeticoesTeste[qtdeT] + " solucoes");
+                //Calcula a media do tempo
+                double mediaTempo = tempoFinal / repeticoesTeste[qtdeT];
+                System.out.println("O tempo para " + qtdeRainha + " rainhas, executando " + repeticoesTeste[qtdeT] + " é vezes é " + mediaTempo + " milisegundos com " + solucoes / repeticoesTeste[qtdeT] + " solucoes");
             }
         }
     }

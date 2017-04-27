@@ -9,6 +9,13 @@ public class ForcaBrutaBackTracking {
 
     private static int solucoes;
 
+    /**
+     * Valida o vetor de rainhas
+     * 
+     * @param qtdeRainha
+     * @param rainhas
+     * @return 
+     */    
     public static boolean valida(int qtdeRainha, int[] rainhas) {        
         //Percorre o vetor de rainhas
         for (int i = 0; i < qtdeRainha; i++) 
@@ -24,6 +31,13 @@ public class ForcaBrutaBackTracking {
         /* solucao valida */
     }
     
+    /**
+     * Realiza o backTracking para encontrar as posicoes da rainha
+     * 
+     * @param qtdeRainha
+     * @param rainhas
+     * @param k 
+     */
     public static void backTracking(int qtdeRainha, int[] rainhas, int k) {
         int i;
         if (k == qtdeRainha) /* solucao completa */ {
@@ -39,6 +53,12 @@ public class ForcaBrutaBackTracking {
         }
     }
 
+    /**
+     * Imprime o tabuleiro com as rainhas
+     * 
+     * @param qtdeRainha
+     * @param rainhas 
+     */
      private static void imprime(int qtdeRainha, int rainhas[]) {
         for (int i = 0; i < qtdeRainha; i++) {
             for (int i1 = 0; i1 < qtdeRainha; i1++) {
@@ -60,14 +80,14 @@ public class ForcaBrutaBackTracking {
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
         int repeticoesTeste[] = {5,10};
 
-        //Testa as quantidades das rainhas especificadas no vetor
+        //Realiza os testes para as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
 
             int qtdeRainha = qtdeRainhasTeste[qtdeR];
             int rainhas[] = new int[qtdeRainha];
             int usado[] = new int[qtdeRainha];
 
-            //Realiza a repeticao das quantidades           
+            //Realiza a repeticao do teste para a quantidade de rainhas    
             for (int qtdeT = 0; qtdeT < repeticoesTeste.length; qtdeT++) {
 
                 //Zera o numero de solucoes
@@ -76,26 +96,28 @@ public class ForcaBrutaBackTracking {
                 //Declara o tempo final da repeticao
                 long tempoFinal = 0;
 
-                //Repete o teste as vezes especificadas
+                //Repete o teste para as vezes especificadas no vetor
                 for (int qtdeV = 0; qtdeV < repeticoesTeste[qtdeT]; qtdeV++) {
 
                     //Zera o tempo de inicio da vez
                     long tempo = 0;
+                    //Pega o tempo corrente
                     tempo = System.currentTimeMillis();
 
                     /* se um elemento i estiver em uso, entao used[i] == 1, caso contrario, used[i] == 0. */
                     for (int i = 0; i < qtdeRainha; i++) {
                         usado[i] = 0;
-                    }
-                    
-                    //permutacao(qtdeRainha, rainhas, usado, 0);
-                    backTracking(qtdeRainha, rainhas, 0);
+                    }                    
+                   backTracking(qtdeRainha, rainhas, 0);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
+                    //Acumula o tempo do teste ao tempo final
                     tempoFinal = tempoFinal + tempo;
                 }
-                System.out.println("O tempo para " + qtdeRainha + " rainhas, executando " + repeticoesTeste[qtdeT] + " é vezes é " + tempoFinal / repeticoesTeste[qtdeT] + " milisegundos com " + solucoes / repeticoesTeste[qtdeT] + " solucoes");
+                //Calcula a media do tempo
+                double mediaTempo = tempoFinal / repeticoesTeste[qtdeT];
+                System.out.println("O tempo para " + qtdeRainha + " rainhas, executando " + repeticoesTeste[qtdeT] + " é vezes é " + mediaTempo + " milisegundos com " + solucoes / repeticoesTeste[qtdeT] + " solucoes");
             }
         }
     }
