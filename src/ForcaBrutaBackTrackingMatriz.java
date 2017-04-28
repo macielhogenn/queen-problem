@@ -32,6 +32,55 @@ public class ForcaBrutaBackTrackingMatriz {
      * @return true se a rainha [linha][coluna] nao for atacada nas posicoes ja
      * atacadas por rainhas previamente inseridas
      */
+    private static boolean valida1(int[][] tabuleiro, int linha, int coluna) {
+
+        //Recupera a quantidade de rainhas
+        int qtdeRainha = tabuleiro.length;
+
+        //Verifica se a rainha esta na mesma linha
+        for (int j = 0; j < qtdeRainha; j++) {
+            if (tabuleiro[linha][j] == 1) {
+                return false;
+            }
+        }
+
+        //Verifica se a rainha esta na mesma coluna
+        for (int i = 0; i < qtdeRainha; i++) {
+            if (tabuleiro[i][coluna] == 1) {
+                return false;
+            }
+        }
+
+        // verifica se ocorre ataque na diagonal principal
+        // acima e abaixo
+        for (int i = linha, j = coluna; i >= 0 && j >= 0; i--, j--) {
+            if (tabuleiro[i][j] == 1) {
+                return false;
+            }
+        }
+        for (int i = linha, j = coluna; i < qtdeRainha && j < qtdeRainha; i++, j++) {
+            if (tabuleiro[i][j] == 1) {
+                return false;
+            }
+        }
+
+        // verifica se ocorre ataque na diagonal secundária
+        // acima e abaixo
+        for (int i = linha, j = coluna; i >= 0 && j < qtdeRainha; i--, j++) {
+            if (tabuleiro[i][j] == 1) {
+                return false;
+            }
+        }
+        for (int i = linha, j = coluna; i < qtdeRainha && j >= 0; i++, j--) {
+            if (tabuleiro[i][j] == 1) {
+                return false;
+            }
+        }
+
+        // Chegou ate posicao segura
+        return true;
+    }
+
     private static boolean valida(int[][] tabuleiro, int linha, int coluna) {
 
         //Recupera a quantidade de rainhas
@@ -39,7 +88,8 @@ public class ForcaBrutaBackTrackingMatriz {
 
         //testa se as posicoes sao regioes que estao sendo atacadas
         for (int k = 1; k <= linha; k++) {
-            //Verifica se a rainha esta na mesma coluna
+
+            //Verifica se a rainha esta na mesma linha            
             if (tabuleiro[linha - k][coluna] == 1) {
                 return false;
             }
@@ -81,18 +131,18 @@ public class ForcaBrutaBackTrackingMatriz {
             solucoes = solucoes + 1;
         } else {
             for (int coluna = 0; coluna < qtdeRainha; coluna++) {
-                // Coloca rainha na posicao [row][col]                
+                // Coloca uma nova rainha na posicao [row][col]                
                 tabuleiro[linha][coluna] = 1;
                 // Se for possivel posiciona-la...                
                 if (valida(tabuleiro, linha, coluna)) {
                     backTracking(tabuleiro, linha + 1);
                 }
-                // Se nao for possivel, remove a rainha desta posicao
+                // Se nao for possivel, remove a rainha desta posicao, realiza o backTracking
                 tabuleiro[linha][coluna] = 0;
             }
         }
     }
-
+      
     /**
      * *************************************************
      * Imprime o tabuleiro da solucao do problema das Rainhas
@@ -129,9 +179,9 @@ public class ForcaBrutaBackTrackingMatriz {
     public static void main(String args[]) {
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4, 6};
+        int qtdeRainhasTeste[] = {4};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5, 10};
+        int repeticoesTeste[] = {1};
 
         //Realiza os testes para as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {

@@ -1,4 +1,3 @@
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -8,7 +7,7 @@ import java.util.Set;
  * @author Ricardo Alberto Harari - ricardo.harari@gmail.com
  *
  */
-public class HeuristicaAlgoritmoGenetico {
+public class HeuristicaAlgoritmoGeneticoString {
 
     private static final int MAX_FITNESS = 8;
     private static Random randomico = new Random();
@@ -79,7 +78,7 @@ public class HeuristicaAlgoritmoGenetico {
             println("Solucao =" + melhorIndividuo);
             println("Fitness =" + fitness(melhorIndividuo));
         } else {
-            System.out.println("Solucao nao encontrada após " + i + " iteracoes");
+            System.out.println("Solucao nao encontrada ap�s " + i + " iteracoes");
             System.out.println("Melhor Individuo =" + melhorIndividuo);
             System.out.println("Fitness =" + fitness(melhorIndividuo));
             ocorreuFalha = true;
@@ -241,9 +240,15 @@ public class HeuristicaAlgoritmoGenetico {
      *
      */
     private static String mutate(String filho) {
+        //System.out.println(">>>filho1:"+filho);
         int mp = randomico.nextInt(filho.length());
+        //System.out.println(">>>>mp:"+mp);
         int mc = randomico.nextInt(filho.length()) + 1;
+        //System.out.println(">>>>mc:"+mc);
+        
         filho = filho.substring(0, mp) + mc + (mp + 1 == filho.length() ? "" : filho.substring(mp + 1));
+        
+        //System.out.println(">>>filho2:"+filho);
         return filho;
     }
 
@@ -279,9 +284,12 @@ public class HeuristicaAlgoritmoGenetico {
      */
     private static String selecionarAleatorio(Set populacao, String px) {
         String pn = px;
+        
         Object[] tmp = populacao.toArray();
+
         while (pn.equals(px)) {
             int i = randomico.nextInt((populacao.size()));
+            
             pn = (String) tmp[i];
         }
         return pn;
@@ -308,7 +316,7 @@ public class HeuristicaAlgoritmoGenetico {
 
     /**
      *
-     * função fitness, retorna a quantidade de rainhas a salvo.
+     * fun��o fitness, retorna a quantidade de rainhas a salvo.
      *
      *
      *
@@ -328,8 +336,8 @@ public class HeuristicaAlgoritmoGenetico {
             }
 
         }
-        // agora verificamos quantas rainhas estao a salvo, este será o nosso
-        // retorno da função fitness
+        // agora verificamos quantas rainhas estao a salvo, este ser� o nosso
+        // retorno da fun��o fitness
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (tabuleiro[i][j] == 1) {
@@ -344,9 +352,9 @@ public class HeuristicaAlgoritmoGenetico {
 
     /**
      *
-     * verifica se existe uma rainha ameaçando a posicao i,j existindo retorna
+     * verifica se existe uma rainha amea�ando a posicao i,j existindo retorna
      *
-     * true caso contrário retorna false
+     * true caso contr�rio retorna false
      *
      *
      *

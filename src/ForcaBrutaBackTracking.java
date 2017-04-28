@@ -33,7 +33,7 @@ public class ForcaBrutaBackTracking {
      *
      * @return true se a rainha [k] nao for atacada nas posicoes ja atacadas por
      * rainhas previamente inseridas
-     */
+     */    
     public static boolean valida(int[] rainhas, int k) {
 
         //Percorre o vetor de rainhas
@@ -71,8 +71,8 @@ public class ForcaBrutaBackTracking {
      *
      * @param rainhas o vetor onde as rainhas serao inseridas
      * @param k coordenada da linha corrente onde a rainhas devera ser inserida
-     */
-    public static void backTracking(int[] rainhas, int k) {
+     */    
+      public static void backTracking(int[] rainhas, int k) {
 
         //Recupera a quantidade de rainhas
         int qtdeRainha = rainhas.length;
@@ -86,6 +86,7 @@ public class ForcaBrutaBackTracking {
         } else {
             /* posiciona a rainha k + 1 */
             for (int i = 0; i < qtdeRainha; i++) {
+                // Coloca uma nova rainha na posicao [k]                
                 rainhas[k] = i;
                 if (valida(rainhas, k)) {
                     backTracking(rainhas, k + 1);
@@ -93,7 +94,7 @@ public class ForcaBrutaBackTracking {
             }
         }
     }
-
+    
     /**
      * Imprime o tabuleiro com as rainhas
      *
