@@ -52,7 +52,7 @@ public class ForcaBrutaBackTracking {
             }
 
             // Código alternativo, pois faz verificao da diagonal principal e secundaria simultaneamente usando abs para tirar o sinal*/
-            //if ( Math.abs(rainhas[i] - rainhas[qtdeRainha]) == (qtdeRainha - i)) {
+            //if ( Math.abs(rainhas[i] - rainhas[qtdeRainha]) == (k - i)) {
             // return false;                
             //}
         }

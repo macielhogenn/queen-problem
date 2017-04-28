@@ -88,7 +88,7 @@ public class ForcaBrutaPermutacao {
         if (k == qtdeRainha) {
             if (valida(rainhas, k)) {
                 //Imprime o tabuleiro quando encontrar a solucao
-                //imprime(rainhas);
+                imprime(rainhas);
                 //Conta o numero de solucoes encontradas
                 solucoes = solucoes + 1;
             }
@@ -118,8 +118,8 @@ public class ForcaBrutaPermutacao {
         System.out.println(" Solucao numero " + (solucoes + 1) + ":");
 
         for (int i = 0; i < qtdeRainha; i++) {
-            for (int i1 = 0; i1 < qtdeRainha; i1++) {
-                if (rainhas[i1] == i) {
+            for (int j = 0; j < qtdeRainha; j++) {
+                if (rainhas[j] == i) {
                     System.out.print(" " + i + " ");
                 } else {
                     System.out.print(" . ");
@@ -137,9 +137,9 @@ public class ForcaBrutaPermutacao {
      */
     public static void main(String args[]) {
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4,6};
+        int qtdeRainhasTeste[] = {4};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5,10};
+        int repeticoesTeste[] = {1};
 
         //Testa as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
