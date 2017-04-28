@@ -1,4 +1,3 @@
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -179,7 +178,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         //Seleciona a posicao da mutacao
         int posicao = randomico.nextInt(filho.length);
         //Novo valor para a posicao selecionado
-        int novovalor = randomico.nextInt(filho.length) + 1;
+        int novovalor = randomico.nextInt(filho.length);
         filho[posicao] = novovalor;
         return filho;
     }
@@ -240,6 +239,22 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      *
      * @return
      */
+      private static int[] gerarIndividuo1() {
+        //Inicializa o vetor de retorno
+        int[] ret = new int[qtdeRainha];
+
+
+        int i = 0;
+        while (i < qtdeRainha) {
+            //Gera um uma rainha aleatoria
+            ret[i] = randomico.nextInt(qtdeRainha);
+            
+            i = i + 1;
+        }
+        return ret;
+    }
+    
+    
     private static int[] gerarIndividuo() {
         //Inicializa o vetor de retorno
         int[] ret = new int[qtdeRainha];
@@ -251,7 +266,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         //Coloca as rainhas na roleta para serem sortedas
         for (int i = 0; i < qtdeRainha; i++) {
             //Soma 1 para que as rainhas comecem com 1
-            roleta[i] = i + 1;
+            roleta[i] = i ;
         }
 
         int i = 0;
@@ -442,12 +457,12 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         println("------------------------------");
         if (achouSolucao) {
             println("Solucao encontrada em " + i + " iteracoes");
-            println("Solucao =" + vetorToString(melhorIndividuo));
-            println("Fitness =" + fitness(melhorIndividuo));
+            println("Solucao = " + vetorToString(melhorIndividuo));
+            println("Fitness = " + fitness(melhorIndividuo));
         } else {
             System.out.println("Solucao nao encontrada após " + i + " iteracoes");
-            System.out.println("Melhor Individuo =" + melhorIndividuo);
-            System.out.println("Fitness =" + fitness(melhorIndividuo));
+            System.out.println("Melhor Individuo = " + vetorToString(melhorIndividuo));
+            System.out.println("Fitness = " + fitness(melhorIndividuo));
             ocorreuFalha = true;
         }
         totalIteracoes = totalIteracoes + i;
