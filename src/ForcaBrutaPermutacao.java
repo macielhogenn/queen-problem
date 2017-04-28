@@ -1,7 +1,13 @@
+
 /**
  *  http://www.ic.unicamp.br/~zanoni/mc102/2013-1s/aulas/aula22.pdf
- * 
+ *
  * @author osmar
+ *
+ * O programa utiliza o metodo de permutacao para gerar todas as solucoes do problema,
+ *
+ * Utiliza um vetor para armazenar as posicoes das rainhas
+ *
  *
  * Forca bruta por permutacao
  *
@@ -9,18 +15,24 @@
 public class ForcaBrutaPermutacao {
 
     /**
-     * Acumula a quantidade de solucoes encontradas
+     * Atributo do numero de solucoes encontradas ao final do algoritmo
      */
     private static int solucoes;
 
     /**
-     * Função que valida o vetor das posicoes das rainhas
+     * Uma das propriedades da rainha e que nao pode haver outra rainha na linha
+     * ou na coluna onde esta se encontra. Assim, na construcao do algoritmo de
+     * solucao, nao se pode colocar uma rainha em uma posicao que esteja sendo
+     * atacada. Esta mesma propriedade tambem vale para as diagonais em relacao
+     * as rainha ja posicionadas.
      *
-     * @param rainhas
-     * @param k
-     * @return Veradeiro ou falso se as posicoes sao validas.
+     * @param rainhas o vetor das rainhas
+     * @param k linha do vetor a ser analisa
+     *
+     * @return true se a rainha [k] nao for atacada nas posicoes ja atacadas por
+     * rainhas previamente inseridas
      */
-    public static boolean solucaoValida(int k, int[] rainhas) {
+    public static boolean valida(int[] rainhas, int k) {
         int x, y;
         for (int i = 0; i < k; i++) {
 
@@ -56,27 +68,37 @@ public class ForcaBrutaPermutacao {
     }
 
     /**
-     * Realiza a pertumacao de todos os resultados
+     * *************************************************
+     * A funcao recursiva do metodo permutacao(). Cada instancia do metodo e
+     * responsavel por posicionar uma rainha na linha (em todas as colunas
+     * possiveis). Se uma rainha pode ser posicionada, baseando-se nas suas
+     * propriedades, sem que esta seja atacada pelas outras rainhas ja
+     * posicionadas, entao esta rainha e' posicionada na posicao corrente e,
+     * recursivamente, as rainhas seguintes sao posicionadas.
      *
-     * @param qtdeRainha
-     * @param rainhas
-     * @param usado
-     * @param k
+     * @param rainhas o vetor onde as rainhas serao inseridas
+     * @param usado o vetor onde as posicoes usadas sao marcadas
+     * @param k coordenada da linha corrente onde a rainhas devera ser inserida
      */
-    public static void permutacao(int qtdeRainha, int rainhas[], int[] usado, int k) {
-        int i;
+    public static void permutacao(int rainhas[], int[] usado, int k) {
+
+        //Recupera a quantidade de rainhas
+        int qtdeRainha = rainhas.length;
+
         if (k == qtdeRainha) {
-            if (solucaoValida(k, rainhas)) {
-                //imprime(qtdeRainha, rainhas);
+            if (valida(rainhas, k)) {
+                //Imprime o tabuleiro quando encontrar a solucao
+                //imprime(rainhas);
+                //Conta o numero de solucoes encontradas
                 solucoes = solucoes + 1;
             }
         } else {
-            for (i = 0; i < qtdeRainha; i++) {
+            for (int i = 0; i < qtdeRainha; i++) {
                 //realiza a permutacao somente para elementos não utilizados
                 if (usado[i] == 0) {
                     usado[i] = 1;
                     rainhas[k] = i;
-                    permutacao(qtdeRainha, rainhas, usado, k + 1);
+                    permutacao(rainhas, usado, k + 1);
                     usado[i] = 0;
                 }
             }
@@ -86,10 +108,15 @@ public class ForcaBrutaPermutacao {
     /**
      * Imprime o tabuleiro com as rainhas
      *
-     * @param qtdeRainha
      * @param rainhas
      */
-    private static void imprime(int qtdeRainha, int rainhas[]) {
+    private static void imprime(int rainhas[]) {
+
+        //Recupera a quantidade de rainhas
+        int qtdeRainha = rainhas.length;
+
+        System.out.println(" Solucao numero " + (solucoes + 1) + ":");
+
         for (int i = 0; i < qtdeRainha; i++) {
             for (int i1 = 0; i1 < qtdeRainha; i1++) {
                 if (rainhas[i1] == i) {
@@ -103,11 +130,16 @@ public class ForcaBrutaPermutacao {
         System.out.println(" ");
     }
 
+    /**
+     * Executa o teste do agoritmo
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4, 6};
+        int qtdeRainhasTeste[] = {4,6};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5, 10};
+        int repeticoesTeste[] = {5,10};
 
         //Testa as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
@@ -136,7 +168,7 @@ public class ForcaBrutaPermutacao {
                     for (int i = 0; i < qtdeRainha; i++) {
                         usado[i] = 0;
                     }
-                    permutacao(qtdeRainha, rainhas, usado, 0);
+                    permutacao(rainhas, usado, 0);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
