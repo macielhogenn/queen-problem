@@ -19,7 +19,7 @@ public class HeuristicaAlgoritmoGeneticoString {
 
     private static int qtdeRainha;
     private static int maiorFitness;
-    private static Random randomico = new Random();
+    private static Random randomico;
 
     private static boolean desabilitarImpressao = true;
 
@@ -50,12 +50,14 @@ public class HeuristicaAlgoritmoGeneticoString {
      * @param populacao
      *
      */
-    private static void carregarPopulacao(Set populacao, int tamanhoPopulacaoInicial) {
-        while (populacao.size() < tamanhoPopulacaoInicial) {
+    private static Set geraPopulacaoInicial(int tamanhoIndividuo) {
+        Set populacao = new HashSet();
+        while (populacao.size() < tamanhoIndividuo) {
             String individuo = gerarIndividuo();
             println("individuo=" + individuo);
             populacao.add(individuo);
         }
+        return populacao;
     }
 
     /**
@@ -86,13 +88,13 @@ public class HeuristicaAlgoritmoGeneticoString {
      * @param populacao
      * @param probabilidadeMutacao
      */
-    private static String geneticAlgorithm(Set populacao, double probabilidadeMutacao, int fitnessAtual) {
+    private static String proximaGeracao(Set populacao, double probabilidadeMutacao, int fitnessAtual) {
         String melhor = null;
         Set filhos = new HashSet();
         int tamanhoPopulacao = populacao.size();
         while (filhos.size() < tamanhoPopulacao) {
-            String p1 = selecionarAleatorio(populacao, "");
-            String p2 = selecionarAleatorio(populacao, p1);
+            String p1 = selecionarIndividuo(populacao, "");
+            String p2 = selecionarIndividuo(populacao, p1);
             String filho = crossover(p1, p2);
             if (randomico.nextDouble() <= probabilidadeMutacao) {
                 int ffitness = avaliacaoIndividuo(filho);
@@ -195,7 +197,7 @@ public class HeuristicaAlgoritmoGeneticoString {
      * @param individuoBase para ser utilizado para nao selecionar
      * @return Um individuo selecionado aleatoramente da populacao
      */
-    private static String selecionarAleatorio(Set populacao, String individuoBase) {
+    private static String selecionarIndividuo(Set populacao, String individuoBase) {
         //Cria um novo individuo para receber um novo elemento
         String individuoSelecionado = individuoBase;
         Object[] tmp = populacao.toArray();
@@ -335,17 +337,15 @@ public class HeuristicaAlgoritmoGeneticoString {
      * @param qRainha
      * @param qtdeGeracoes
      */
-    private static void executarAlgoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoPopulacaoInicial) {
+    private static void algoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoIndividuo, double probabilidadeMutacao) {
         //Define a quantidade rainhas        
         qtdeRainha = qRainha;
         //Define o maior fitness pela quantidade rainhas 
         maiorFitness = qtdeRainha;
 
         // gerar a populacao inicial com 10 individuos
-        Set populacao = new HashSet();
-        carregarPopulacao(populacao, tamanhoPopulacaoInicial);
+        Set populacao = geraPopulacaoInicial(tamanhoIndividuo);
 
-        double probabilidadeMutacao = 0.15;
         String melhorIndividuo = null;
         int melhorFitness = 0;
         int fitness = 0;
@@ -353,7 +353,7 @@ public class HeuristicaAlgoritmoGeneticoString {
         int contador = 0;
 
         while ((geracao < qtdeGeracoes) && (fitness != maiorFitness)) {
-            melhorIndividuo = geneticAlgorithm(populacao, probabilidadeMutacao, melhorFitness);
+            melhorIndividuo = proximaGeracao(populacao, probabilidadeMutacao, melhorFitness);
             fitness = avaliacaoIndividuo(melhorIndividuo);
             if (fitness > melhorFitness) {
                 probabilidadeMutacao = 0.10;
@@ -367,7 +367,7 @@ public class HeuristicaAlgoritmoGeneticoString {
                     probabilidadeMutacao = 0.50;
                 } else if (contador > 5000) {
                     populacao.clear();
-                    carregarPopulacao(populacao, tamanhoPopulacaoInicial);
+                     populacao = geraPopulacaoInicial(tamanhoIndividuo);
                     probabilidadeMutacao = 0.10;
                     melhorFitness = -1;
                 }
@@ -393,9 +393,9 @@ public class HeuristicaAlgoritmoGeneticoString {
     public static void main(String[] args) {
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4, 6, 8};
+        int qtdeRainhasTeste[] = {4};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5, 10};
+        int repeticoesTeste[] = {1};
 
         //Declara o tempo total do teste
         double tempoTeste = 0;
@@ -432,14 +432,15 @@ public class HeuristicaAlgoritmoGeneticoString {
                     //Quantidade de geracoes
                     int qtdeGeracoes = 300000;
                     //Tamanho da populacao
-                    int tamanhoPopulacaoInicial = 10;
+                    int tamanhoIndividuo = 10;
                     //Probabilidade de mutacao dos individuos
                     double probabilidadeMutacao = 0.15;
                     //Gerar individuos com repeticao na populacao inicial
                     boolean repeticao = true;
-                    //Executa a solucao do algoritmo
-                    //executarAlgoritmoGenetico(qRainha, qtdeGeracoes, tamanhoPopulacaoInicial,probabilidadeMutacao, repeticao);
-                    executarAlgoritmoGenetico(qRainha, qtdeGeracoes, tamanhoPopulacaoInicial);
+                    //Incializa o gerador de numeros aleatorios
+                    randomico = new Random();
+                    //Executa a solucao do algoritmo                    
+                    algoritmoGenetico(qRainha, qtdeGeracoes, tamanhoIndividuo, probabilidadeMutacao);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;

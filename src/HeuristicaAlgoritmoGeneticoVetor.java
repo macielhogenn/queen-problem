@@ -19,7 +19,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
 
     private static int qtdeRainha;
     private static int maiorFitness;
-    private static Random randomico = new Random();
+    private static Random randomico;
 
     //Habilita ou desabilida a saida dos dados de impressao
     private static boolean desabilidarImpressao = true;
@@ -68,17 +68,19 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * Carreca a populacao inicial de individuos do AG
      *
      * @param populacao Conjunto de individuos da populacao
-     * @param tamanhoPopulacaoInicial quantidade de individuos da populacao
+     * @param tamanhoIndividuo quantidade de individuos da populacao
      * inicial
      */
-    private static void carregarPopulacao(Set populacao, int tamanhoPopulacaoInicial, boolean repeticao) {
-        while (populacao.size() < tamanhoPopulacaoInicial) {
+    private static Set geraPopulacaoInicial(int tamanhoIndividuo, boolean repeticao) {
+        Set populacao = new HashSet();
+        while (populacao.size() < tamanhoIndividuo) {
             //Gera um individuo
             int[] individuo = gerarIndividuo();
             println("individuo=" + vetorToString(individuo));
             //Adiciona o novo individuo a populacao
             populacao.add(individuo);
         }
+        return populacao;
     }
 
     /**
@@ -108,9 +110,8 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * @param populacao
      * @param probabilidadeMutacao
      */
-    private static int[] algoritmoGenetico(Set populacao, double probabilidadeMutacao, int fitnessAtual) {
-        //Guarda o melhor individuo
-        int[] melhorIndividuo = null;
+    private static int[] proximaGeracao(Set populacao, double probabilidadeMutacao, int fitnessAtual) {
+        
         //Conjunto de novos individuos da proxima geracao
         Set novaPopulacao = new HashSet();
         //Gera a nova populacao com base na populacao anteior        
@@ -118,13 +119,14 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         //Gera os novos invidiuos para a nova geracao
         while (novaPopulacao.size() < tamanhoPopulacao) {
             //Seleciona o primeiro individuo para realizar o crossover
-            int individuo1[] = selecionarAleatorio(populacao, null);
+            int individuo1[] = selecionarIndividuo(populacao, null);
             //Seleciona o segundo indiviuo diferente do anterior para realiar o crossover
-            int individuo2[] = selecionarAleatorio(populacao, individuo1);
+            int individuo2[] = selecionarIndividuo(populacao, individuo1);
             //Gera o crossover entre individuo1 e individuo2 para gerar u novo individuo do cruzamento
             int novoIndividuo[] = crossover(individuo1, individuo2);
             //Verifica a probabilidade de realizar mutacao no filho
             if (randomico.nextDouble() <= probabilidadeMutacao) {
+                //So realiza a mutacao se o ffitness for pior que o atual
                 int ffitness = avaliacaoIndividuo(novoIndividuo);
                 if (ffitness <= fitnessAtual) {
                     novoIndividuo = mutacao(novoIndividuo);
@@ -136,34 +138,43 @@ public class HeuristicaAlgoritmoGeneticoVetor {
 
         // Adicionar dois dos melhores pais a populacao
         Object[] pais = populacao.toArray();
-        int[] f = new int[pais.length];
+        int[] fitness = new int[pais.length];
+        //Um numero baixo para o menor fitness
         int melhorF = -1;
         for (int i = 0; i < pais.length; i++) {
-            f[i] = avaliacaoIndividuo((int[]) pais[i]);
-            if (melhorF < f[i]) {
-                melhorF = f[i];
+            fitness[i] = avaliacaoIndividuo((int[]) pais[i]);
+            //Localiza o melhor fitness
+            if (melhorF < fitness[i]) {
+                melhorF = fitness[i];
             }
         }
         populacao.clear();
         while (populacao.size() < 2) {
-            for (int i = 0; i < f.length; i++) {
-                if (f[i] == melhorF) {
+            for (int i = 0; i < fitness.length; i++) {
+                //Adiciona os melhores a populacao
+                if (fitness[i] == melhorF) {
                     populacao.add((int[]) pais[i]);
                 }
+                //Se adicionou 2 e sai
                 if (populacao.size() == 2) {
                     break;
                 }
             }
+            //Decrementa o fitness para pegar o proximo
             melhorF--;
-        }
+        }        
         novaPopulacao.addAll(populacao);
+                
+         //Guarda o melhor individuo
+        int[] melhorIndividuo = null;
+        //Procura o melhor individuo na nova populacao
         Object[] pop = novaPopulacao.toArray();
-        f = new int[pop.length];
+        fitness = new int[pop.length];
         melhorF = -1;
-        for (int i = 0; i < f.length; i++) {
-            f[i] = avaliacaoIndividuo((int[]) pop[i]);
-            if (melhorF < f[i]) {
-                melhorF = f[i];
+        for (int i = 0; i < fitness.length; i++) {
+            fitness[i] = avaliacaoIndividuo((int[]) pop[i]);
+            if (melhorF < fitness[i]) {
+                melhorF = fitness[i];
                 melhorIndividuo = (int[]) pop[i];
             }
         }
@@ -172,8 +183,8 @@ public class HeuristicaAlgoritmoGeneticoVetor {
             if (melhorF < 0) {
                 break;
             }
-            for (int i = 0; i < f.length; i++) {
-                if (f[i] == melhorF && populacao.size() < tamanhoPopulacao) {
+            for (int i = 0; i < fitness.length; i++) {
+                if (fitness[i] == melhorF && populacao.size() < tamanhoPopulacao) {
                     populacao.add((int[]) pop[i]);
                 }
             }
@@ -230,14 +241,9 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * @param individuoBase para ser utilizado para nao selecionar
      * @return Um individuo selecionado aleatoramente da populacao
      */
-    private static int[] selecionarAleatorio(Set populacao, int[] individuoBase) {
+    private static int[] selecionarIndividuo(Set populacao, int[] individuoBase) {
         //Cria um vetor para receber um novo elemento
         int[] individuoSelecionado = new int[qtdeRainha];
-        //Somente se px diferente de null
-        if (individuoBase != null) {
-            //Copia o individuoBase para individuoSelecionado
-            System.arraycopy(individuoBase, 0, individuoSelecionado, 0, individuoBase.length);
-        }
         //Transforma a populacao em um vetor de objetos
         Object[] tmp = populacao.toArray();
         //Enquanto for igual a individuoBase seleciona outro individuo
@@ -436,11 +442,11 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * 
      * @param qRainha
      * @param qtdeGeracoes
-     * @param tamanhoPopulacaoInicial
+     * @param tamanhoIndividuo
      * @param probabilidadeMutacao
      * @param repeticao 
      */
-    public static void executarAlgoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoPopulacaoInicial, double probabilidadeMutacao, boolean repeticao) {
+    public static void algoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoIndividuo, double probabilidadeMutacao, boolean repeticao) {
 
         //Define a quantidade rainhas        
         qtdeRainha = qRainha;
@@ -448,18 +454,17 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         maiorFitness = qtdeRainha;
 
         // gerar a populacao inicial com 10 individuos
-        Set populacao = new HashSet();
-        carregarPopulacao(populacao, tamanhoPopulacaoInicial, repeticao);
+        Set populacao = geraPopulacaoInicial(tamanhoIndividuo, repeticao);
         
         int[] melhorIndividuo = null;
         int melhorFitness = 0;
         int fitness = 0;
         int geracao = 0;
         int contador = 0;
-
-        while ((geracao < qtdeGeracoes) && (fitness != maiorFitness)) {
+        
+        do{            
             //Retorna o melhor individuo da populacao
-            melhorIndividuo = algoritmoGenetico(populacao, probabilidadeMutacao, melhorFitness);
+            melhorIndividuo = proximaGeracao(populacao, probabilidadeMutacao, melhorFitness);
             //Retorna o fitness do melhor inidividuo da populacao
             fitness = avaliacaoIndividuo(melhorIndividuo);
             //Verifica se o fitness do melhor individuo é o melhor fitnesss
@@ -478,14 +483,15 @@ public class HeuristicaAlgoritmoGeneticoVetor {
                     //Limpa populacao
                     populacao.clear();
                     //Carrega uma nova populacao
-                    carregarPopulacao(populacao, tamanhoPopulacaoInicial, repeticao);
+                    populacao = geraPopulacaoInicial(tamanhoIndividuo, repeticao);
                     probabilidadeMutacao = 0.10;
                     melhorFitness = -1;
                 }
             }
             geracao = geracao + 1;
-        }
-
+        // Ate que a geracao atinja o maxiou ou alcance o maior fitness    
+        }  while ((geracao < qtdeGeracoes) && (fitness != maiorFitness));
+        
         //Estatisticas da execucao
         if (fitness == maiorFitness) {
             solucoes = solucoes + 1;
@@ -506,9 +512,9 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     public static void main(String[] args) {
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4,6,8};
+        int qtdeRainhasTeste[] = {4};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5,10};
+        int repeticoesTeste[] = {1};
 
         //Declara o tempo total do teste
         double tempoTeste = 0;
@@ -545,13 +551,16 @@ public class HeuristicaAlgoritmoGeneticoVetor {
                     //Quantidade de geracoes
                     int qtdeGeracoes = 300000;
                     //Tamanho da populacao
-                    int tamanhoPopulacaoInicial = 10;
+                    int tamanhoIndividuo = 10;
                     //Probabilidade de mutacao dos individuos
-                    double probabilidadeMutacao = 0.15;
+                    double probabilidadeMutacao = 0.15;                   
                     //Gerar individuos com repeticao na populacao inicial
                     boolean repeticao = true;
+                    //Incializa o gerador de numeros aleatorios
+                    randomico = new Random();
+                    
                     //Executa a solucao do algoritmo
-                    executarAlgoritmoGenetico(qRainha, qtdeGeracoes, tamanhoPopulacaoInicial,probabilidadeMutacao, repeticao);
+                    algoritmoGenetico(qRainha, qtdeGeracoes, tamanhoIndividuo,probabilidadeMutacao, repeticao);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
