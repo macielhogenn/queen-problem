@@ -199,7 +199,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     }
 
     /**
-     * Realiza o crossover entre dois individuos
+     * Realiza o crossover entre dois individuos da populacao
      *
      * @param individuo1 Individuo que fornece a 1a parte dos genes para o novo
      * individuo
@@ -430,7 +430,16 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         }
         return false; // esta a salvo
     }
-
+    
+    /**
+     * Executa as geracoes do algoritmo genetico
+     * 
+     * @param qRainha
+     * @param qtdeGeracoes
+     * @param tamanhoPopulacaoInicial
+     * @param probabilidadeMutacao
+     * @param repeticao 
+     */
     public static void executarAlgoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoPopulacaoInicial, double probabilidadeMutacao, boolean repeticao) {
 
         //Define a quantidade rainhas        
