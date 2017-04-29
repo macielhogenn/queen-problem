@@ -256,20 +256,6 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         return individuoSelecionado;
     }
 
-    /**
-     * Gera um individuo com n posicoes de de forma aleatoria de acordo com o tipo.
-     *
-     * @param repetir Indica se deve ser gerado com repeticao ou nao os individuos
-     * @return um individuo da populacao com repeticao de rainha.
-     */
-    
-    private static int[] gerarIndividuo1(boolean repeticao) {
-        if (repeticao==true) {
-            return gerarIndividuo();
-        } else {
-            return gerarIndividuoSemRepeticao();
-        }           
-    }
     
     /**
      * Gera um individuo com n posicoes de forma aleatoria de acordo com a
@@ -414,7 +400,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
             j++;
         }
 
-        // verificar na diagonal3
+        // Verificar a diagonal3
         i = linha + 1;
         j = coluna - 1;
         while (i < qtdeRainha && j >= 0) {
@@ -424,7 +410,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
             i++;
             j--;
         }
-        // verificar na diagonal4
+        // Verifica a diagonal4
         i = linha - 1;
         j = coluna + 1;
         while (i >= 0 && j < qtdeRainha) {
@@ -512,9 +498,9 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     public static void main(String[] args) {
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4};
+        int qtdeRainhasTeste[] = {4,6,8};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {1};
+        int repeticoesTeste[] = {5,10,15};
 
         //Declara o tempo total do teste
         double tempoTeste = 0;
