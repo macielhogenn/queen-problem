@@ -8,7 +8,7 @@ import java.util.Set;
  * @author Osmar e Maciel
  *
  */
-public class HeuristicaAlgoritmoGeneticoVetor {
+public class HeuristicaAlgoritmoGeneticoVetor1 {
 
     /**
      * Atributo do numero de solucoes encontradas ao final do algoritmo
@@ -16,13 +16,13 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     private static int solucoes;
     private static int geracaoSolucao;
     private static int[] individuoEncontrado;
+    private static int maiorFitness;
 
     private static int qtdeRainha;
-    private static int maiorFitness;
-    private static Random randomico;
+    private static Random randomico = new Random();
 
     //Habilita ou desabilida a saida dos dados de impressao
-    private static boolean desabilidarImpressao = true;
+    private static boolean desabilidarImpressao = false;
 
     /**
      * Trata a saida de dados
@@ -68,15 +68,14 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * Carrega a populacao inicial de individuos do AG
      *
      * @param populacao Conjunto de individuos da populacao
-     * @param tamanhoIndividuo quantidade de individuos da populacao
-     * inicial
+     * @param tamanhoIndividuo quantidade de individuos da populacao inicial
      */
     private static Set geraPopulacaoInicial(int tamanhoIndividuo) {
         Set populacao = new HashSet();
         while (populacao.size() < tamanhoIndividuo) {
             //Gera um individuo
             int[] individuo = gerarIndividuo();
-            println("individuo=" + vetorToString(individuo));
+            println("individuo=" + vetorToString(individuo) + "=" + funcaoFitness(individuo) + "=" + verificaSolucao(individuo) + "=" + getNumeroRainhas(individuo));
             //Adiciona o novo individuo a populacao
             populacao.add(individuo);
         }
@@ -104,18 +103,18 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     }
 
     /**
-     * Logica do Algoritmo Genetico mantendo os melhores na populacao. Retorna o
-     * melhor individuo da populacao
+     * Gera a proxima geracao de individuos. Retorna a nova populacao.
      *
      * @param populacao
      * @param probabilidadeMutacao
      */
-    private static int[] proximaGeracao(Set populacao, double probabilidadeMutacao, int fitnessAtual) {
-        
+    private static Set proximaGeracao(Set populacao, double probabilidadeMutacao) {
+
         //Conjunto de novos individuos da proxima geracao
         Set novaPopulacao = new HashSet();
         //Gera a nova populacao com base na populacao anteior        
         int tamanhoPopulacao = populacao.size();
+
         //Gera os novos invidiuos para a nova geracao
         while (novaPopulacao.size() < tamanhoPopulacao) {
             //Seleciona o primeiro individuo para realizar o crossover
@@ -127,68 +126,27 @@ public class HeuristicaAlgoritmoGeneticoVetor {
             //Verifica a probabilidade de realizar mutacao no filho
             if (randomico.nextDouble() <= probabilidadeMutacao) {
                 //So realiza a mutacao se o ffitness for pior que o atual
-                int ffitness = avaliacaoIndividuo(novoIndividuo);
-                if (ffitness <= fitnessAtual) {
-                    novoIndividuo = mutacao(novoIndividuo);
-                }
+                novoIndividuo = mutacao(novoIndividuo);
             }
             //Adiciona o filho ao conjunto
             novaPopulacao.add(novoIndividuo);
         }
+        return novaPopulacao;
+    }
 
-        // Adicionar dois dos melhores pais a populacao
-        Object[] pais = populacao.toArray();
-        int[] fitness = new int[pais.length];
-        //Um numero baixo para o menor fitness
-        int melhorF = -1;
-        for (int i = 0; i < pais.length; i++) {
-            fitness[i] = avaliacaoIndividuo((int[]) pais[i]);
-            //Localiza o melhor fitness
-            if (melhorF < fitness[i]) {
-                melhorF = fitness[i];
-            }
-        }
-        populacao.clear();
-        while (populacao.size() < 2) {
-            for (int i = 0; i < fitness.length; i++) {
-                //Adiciona os melhores a populacao
-                if (fitness[i] == melhorF) {
-                    populacao.add((int[]) pais[i]);
-                }
-                //Se adicionou 2 e sai
-                if (populacao.size() == 2) {
-                    break;
-                }
-            }
-            //Decrementa o fitness para pegar o proximo
-            melhorF--;
-        }        
-        novaPopulacao.addAll(populacao);
-                
-         //Guarda o melhor individuo
+    public static int[] localizarMelhorIndividuo(Set populacao) {
+        //Guarda o melhor individuo
         int[] melhorIndividuo = null;
         //Procura o melhor individuo na nova populacao
-        Object[] pop = novaPopulacao.toArray();
-        fitness = new int[pop.length];
-        melhorF = -1;
-        for (int i = 0; i < fitness.length; i++) {
-            fitness[i] = avaliacaoIndividuo((int[]) pop[i]);
-            if (melhorF < fitness[i]) {
-                melhorF = fitness[i];
-                melhorIndividuo = (int[]) pop[i];
+        Object[] vetorPopulacao = populacao.toArray();
+        //Guarda o melhor fitness
+        int melhorFitness = -1;
+        for (int i = 0; i < vetorPopulacao.length; i++) {
+            int fitness = funcaoFitness((int[]) vetorPopulacao[i]);
+            if (fitness > melhorFitness) {
+                melhorFitness = fitness;
+                melhorIndividuo = (int[]) vetorPopulacao[i];
             }
-        }
-        populacao.clear();
-        while (populacao.size() < tamanhoPopulacao) {
-            if (melhorF < 0) {
-                break;
-            }
-            for (int i = 0; i < fitness.length; i++) {
-                if (fitness[i] == melhorF && populacao.size() < tamanhoPopulacao) {
-                    populacao.add((int[]) pop[i]);
-                }
-            }
-            melhorF--;
         }
         return melhorIndividuo;
     }
@@ -241,6 +199,34 @@ public class HeuristicaAlgoritmoGeneticoVetor {
      * @param individuoBase para ser utilizado para nao selecionar
      * @return Um individuo selecionado aleatoramente da populacao
      */
+    private static int[] selecionarIndividuo1(Set populacao, int[] individuoBase) {
+        //Cria um vetor para receber um novo elemento
+        int[] individuoSelecionado = new int[qtdeRainha];
+        //Transforma a populacao em um vetor de objetos
+
+        Object[] pais = populacao.toArray();
+        int[] fitness = new int[pais.length];
+        //Um numero baixo para o menor fitness
+
+        for (int i = 0; i < pais.length; i++) {
+            fitness[i] = funcaoFitness((int[]) pais[i]);
+        }
+
+        // Normaliza
+        fitness = normalizar(fitness);
+
+        int prob = randomico.nextInt();
+        int totalSoFar = 0;
+        for (int i = 0; i < fitness.length; i++) {
+            totalSoFar = totalSoFar + fitness[i];
+            if (prob <= totalSoFar) {
+                individuoSelecionado = (int[]) pais[i];
+                break;
+            }
+        }
+        return individuoSelecionado;
+    }
+
     private static int[] selecionarIndividuo(Set populacao, int[] individuoBase) {
         //Cria um vetor para receber um novo elemento
         int[] individuoSelecionado = new int[qtdeRainha];
@@ -255,7 +241,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         }
         return individuoSelecionado;
     }
-    
+
     /**
      * Gera um individuo com n posicoes de forma aleatoria de acordo com a
      * quantidade de rainhas. Gera rainhas repetidas
@@ -265,70 +251,29 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     private static int[] gerarIndividuo() {
         //Inicializa o vetor de retorno
         int[] ret = new int[qtdeRainha];
-
         int i = 0;
         //Gera os genes de individuo de acordo com o tamanho do gene
         while (i < qtdeRainha) {
             //Gera um uma rainha aleatoria
-            ret[i] = randomico.nextInt(qtdeRainha);
+            ret[i] = new Random().nextInt(qtdeRainha);
             i = i + 1;
         }
         return ret;
     }
 
     /**
-     * NAO ESTA SENDO UTILIZADO
-     * 
-     * Gera um individuo com n posicoes de forma aleatoria de acordo com a
-     * quantidade de rainhas. Usa uma roleta para evitar individuos reptidos
-     *
-     * @return um individuo da populacao sem repeticao de rainha.
-     */
-    private static int[] gerarIndividuoSemRepeticao() {
-        //Inicializa o vetor de retorno
-        int[] ret = new int[qtdeRainha];
-
-        //Inicializa o vetor da roleta
-        int[] roleta = new int[qtdeRainha];
-        //Controla o tamanho da roleta
-        int tamanhoRoleta = qtdeRainha;
-        //Coloca as rainhas na roleta para serem sortedas
-        for (int i = 0; i < qtdeRainha; i++) {
-            //Soma 1 para que as rainhas comecem com 1
-            roleta[i] = i;
-        }
-
-        int i = 0;
-        //Gera os genes de individuo de acordo com o tamanho do gene
-        while (i < qtdeRainha) {
-            //Gera um numero aleatorio para selecionar um elemento da roleta
-            int pos = randomico.nextInt(tamanhoRoleta);
-            ret[i] = roleta[pos];
-
-            //Retira elemento sortedo da roleta            
-            for (int j = pos; j < tamanhoRoleta - 1; j++) {
-                roleta[j] = roleta[j + 1];
-            }
-            //Decrementa a quantidade de elementos da roleta
-            tamanhoRoleta = tamanhoRoleta - 1;
-
-            i = i + 1;
-        }
-        return ret;
-    }
-
-    /**
-     * Função de avaliacao do individuo, retorna a quantidade de rainhas a salvo.
+     * Função de avaliacao do individuo, retorna a quantidade de rainhas a
+     * salvo.
      *
      * @param individuo
      * @return a quantidade de rainhas salvas no individuo
      */
-    public static int avaliacaoIndividuo(int[] individuo) {
-        int ret = 0;
+    public static int funcaoFitness1(int[] individuo) {
+        int fitness = 0;
         int[][] tabuleiro = new int[qtdeRainha][qtdeRainha];
 
         // Monta o tabuleiro com 0 em posicao vazia e 1 com a rainha
-        for (int i = 0; i < qtdeRainha; i++) {            
+        for (int i = 0; i < qtdeRainha; i++) {
             int posicaoRainha = individuo[i];
             for (int j = 0; j < qtdeRainha; j++) {
                 if (posicaoRainha == j) {
@@ -337,14 +282,46 @@ public class HeuristicaAlgoritmoGeneticoVetor {
                     tabuleiro[i][j] = 0;
                 }
             }
-
         }
+
+        for (int i = 0; i < qtdeRainha - 1; i++) {
+            for (int j = i + 1; j < qtdeRainha; j++) {
+                boolean semAtaque = true;
+                if (tabuleiro[i][j] == 1) {
+                    if (valida(tabuleiro, i, j) == true) {
+                        semAtaque = false;
+                    }
+                }
+                if (semAtaque == true) {
+                    fitness = fitness + 1;
+                }
+            }
+        }
+        return fitness;
+    }
+
+    public static int funcaoFitness(int[] individuo) {
+        int[][] tabuleiro = new int[qtdeRainha][qtdeRainha];
+
+        // Monta o tabuleiro com 0 em posicao vazia e 1 com a rainha
+        for (int i = 0; i < qtdeRainha; i++) {
+            int posicaoRainha = individuo[i];
+            for (int j = 0; j < qtdeRainha; j++) {
+                if (posicaoRainha == j) {
+                    tabuleiro[i][j] = 1;
+                } else {
+                    tabuleiro[i][j] = 0;
+                }
+            }
+        }
+
         // Verifica se as rainhas estao salvas
-        // A quantidade rainhas não salvas retorno da função fitness
+        // A quantidade rainhas na salvas e o retorno da função fitness
+        int ret = 0;
         for (int i = 0; i < qtdeRainha; i++) {
             for (int j = 0; j < qtdeRainha; j++) {
                 if (tabuleiro[i][j] == 1) {
-                    if (!valida(tabuleiro, i, j)) {
+                    if (valida(tabuleiro, i, j) == false) {
                         ret++;
                     }
                 }
@@ -354,8 +331,88 @@ public class HeuristicaAlgoritmoGeneticoVetor {
     }
 
     /**
-     * Verifica se existe uma rainha ameaçando a posicao i,j existindo retorna
-     * true caso contrário retorna false
+     * Retorna o numero de rainhas do tabuleiro
+     * @param individuo Individuo com o vetor das rainhas
+     * @return 
+     */
+    public static int getNumeroRainhas(int[] individuo) {
+        int[][] tabuleiro = new int[qtdeRainha][qtdeRainha];
+
+        // Monta o tabuleiro com 0 em posicao vazia e 1 com a rainha
+        for (int i = 0; i < qtdeRainha; i++) {
+            int posicaoRainha = individuo[i];
+            for (int j = 0; j < qtdeRainha; j++) {
+                if (posicaoRainha == j) {
+                    tabuleiro[i][j] = 1;
+                } else {
+                    tabuleiro[i][j] = 0;
+                }
+            }
+        }
+        
+        return getNumeroRainhasTabuleiro(tabuleiro);
+    }
+
+     /**
+     * Retorna o numero de rainhas do tabuleiro
+     * @param tabuleiro Um tabuleiro preenchido com as rainhas
+     * @return 
+     */
+    public static int getNumeroRainhasTabuleiro(int[][] tabuleiro) {
+        int count = 0;
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro.length; j++) {
+                if (tabuleiro[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Verifica se o individuo e uma solucao do problema
+     * 
+     * @param individuo um solucao a ser verifica
+     * @return true se o individuo e uma solucao do problema
+     */    
+    public static boolean verificaSolucao(int[] individuo) {
+        int[][] tabuleiro = new int[qtdeRainha][qtdeRainha];
+
+        // Monta o tabuleiro com 0 em posicao vazia e 1 com a rainha
+        for (int i = 0; i < qtdeRainha; i++) {
+            int posicaoRainha = individuo[i];
+            for (int j = 0; j < qtdeRainha; j++) {
+                if (posicaoRainha == j) {
+                    tabuleiro[i][j] = 1;
+                } else {
+                    tabuleiro[i][j] = 0;
+                }
+            }
+        }
+        
+        //Verifica se todas as rainhas estao em posicoes validas
+        int cont = 0;
+        for (int i = 0; i < qtdeRainha; i++) {
+            for (int j = 0; j < qtdeRainha; j++) {
+                //Verifica se a posicao esta ocupada
+                if (tabuleiro[i][j] == 1) {
+                    if (valida(tabuleiro, i, j) == true) {
+                        cont = cont + 1;
+                    }
+                }
+            }
+        }
+        boolean ret = false;
+        if (cont == 0) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    /**
+     * Verifica se existe uma rainha ameaçando a posicao linha,coluna existindo
+     * retorna true caso contrário retorna false
      *
      * @param tabuleiro a ser validado
      * @param linha linha da rainha
@@ -378,7 +435,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
                 return true;
             }
         }
-        
+
         // verificar na diagonal1
         int i = linha - 1;
         int j = coluna - 1;
@@ -400,7 +457,7 @@ public class HeuristicaAlgoritmoGeneticoVetor {
             i++;
             j++;
         }
-       
+
         // Verificar a diagonal3
         i = linha + 1;
         j = coluna - 1;
@@ -423,15 +480,30 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         }
         return false; // esta a salvo
     }
-    
+
+    public static int[] normalizar(int[] probDist) {
+        int len = probDist.length;
+        int total = 0;
+        for (int d : probDist) {
+            total = total + d;
+        }
+
+        int[] normalized = new int[len];
+        if (total != 0) {
+            for (int i = 0; i < len; i++) {
+                normalized[i] = probDist[i] / total;
+            }
+        }
+        return normalized;
+    }
+
     /**
      * Executa as geracoes do algoritmo genetico
-     * 
+     *
      * @param qRainha
      * @param qtdeGeracoes
      * @param tamanhoIndividuo
      * @param probabilidadeMutacao
-     * @param repeticao 
      */
     public static void algoritmoGenetico(int qRainha, int qtdeGeracoes, int tamanhoIndividuo, double probabilidadeMutacao) {
 
@@ -440,84 +512,85 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         //Define o maior fitness pela quantidade rainhas 
         maiorFitness = qtdeRainha;
 
-        // gerar a populacao inicial com 10 individuos
+        // Gera a populacao inicial 
         Set populacao = geraPopulacaoInicial(tamanhoIndividuo);
-        
+        // Guarda o melhor Individuo
         int[] melhorIndividuo = null;
-        int melhorFitness = 0;
+        // Guarda o fitness do melhor Individuo
         int fitness = 0;
+        //Conta o numero de geracoes
         int geracao = 0;
-        int contador = 0;
-        
-        do{            
+
+        do {
+            //Gera a proxima populacao
+            populacao = proximaGeracao(populacao, probabilidadeMutacao);
+
             //Retorna o melhor individuo da populacao
-            melhorIndividuo = proximaGeracao(populacao, probabilidadeMutacao, melhorFitness);
-            //Retorna o fitness do melhor inidividuo da populacao
-            fitness = avaliacaoIndividuo(melhorIndividuo);
-            //Verifica se o fitness do melhor individuo é o melhor fitnesss
-            if (fitness > melhorFitness) {
-                probabilidadeMutacao = 0.10;
-                contador = 0;
-                melhorFitness = fitness;
-            } else {
-                contador++;
-                //Se nao ocorrer aumento do fitness aumenta a probabilidade de mutacao
-                if (contador > 1000) {
-                    probabilidadeMutacao = 0.30;
-                } else if (contador > 2000) {
-                    probabilidadeMutacao = 0.50;
-                } else if (contador > 5000) {
-                    //Limpa populacao
-                    populacao.clear();
-                    //Carrega uma nova populacao
-                    populacao = geraPopulacaoInicial(tamanhoIndividuo);
-                    probabilidadeMutacao = 0.10;
-                    melhorFitness = -1;
-                }
-            }
+            melhorIndividuo = localizarMelhorIndividuo(populacao);
+
+            // Calcula o fitness do melhor individuo
+            fitness = funcaoFitness(melhorIndividuo);
+
+            //Avanca para proxima geracao
             geracao = geracao + 1;
-        // Ate que a geracao atinja o maxiou ou alcance o maior fitness    
-        }  while ((geracao < qtdeGeracoes) && (fitness != maiorFitness));
-        
+            // Ate que a geracao atinja o maxiou ou alcance o maior fitness    
+
+            //}  while ((geracao < qtdeGeracoes) && (fitness != maiorFitness));
+        } while ((geracao < qtdeGeracoes) && (verificaSolucao(melhorIndividuo) == false));
+
+        //System.out.println("geracao:" + geracao);
+        //System.out.println("funcaoFitness:" + funcaoFitness(melhorIndividuo));        
+        //System.out.println("fitness:" + fitness);
+        //System.out.println("maiorFitness:" + maiorFitness);
         //Estatisticas da execucao
-        if (fitness == maiorFitness) {
+        if (verificaSolucao(melhorIndividuo)) {
             solucoes = solucoes + 1;
             geracaoSolucao = geracao;
             individuoEncontrado = melhorIndividuo;
             println("Solucao encontrada em " + geracao + " geracoes");
-            println("Solucao = " + vetorToString(melhorIndividuo));
-            println("Fitness = " + avaliacaoIndividuo(melhorIndividuo));
+            println("Melhor Individuo = " + vetorToString(melhorIndividuo));
+            println("Objetivo= " + verificaSolucao(melhorIndividuo));
+            println("Numero Rainhas= " + getNumeroRainhas(melhorIndividuo));
+            println("Fitness = " + funcaoFitness(melhorIndividuo));
         } else {
             println("Solucao nao encontrada após " + geracao + " geracoes");
             println("Melhor Individuo = " + vetorToString(melhorIndividuo));
-            println("Fitness = " + avaliacaoIndividuo(melhorIndividuo));            
+            println("Objetivo= " + verificaSolucao(melhorIndividuo));
+            println("Numero Rainhas= " + getNumeroRainhas(melhorIndividuo));
+            println("Fitness = " + funcaoFitness(melhorIndividuo));
         }
-        println("Solucao");
+        println("Solucao:");
         imprime(melhorIndividuo);
     }
 
     public static void main(String[] args) {
 
-        System.out.println("Algoritmo Genetico");
-        
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4,6,8,10};
+        int qtdeRainhasTeste[] = {4, 5, 6};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {10};
+        int repeticoesTeste[] = {1};
+
+        //Parametros do algoritmo genetico
+        //Quantidade de geracoes
+        int qtdeGeracoes = 300000;
+        //Tamanho da populacao
+        int tamanhoIndividuo = 30;
+        //Probabilidade de mutacao dos individuos
+        double probabilidadeMutacao = 0.15;
 
         //Declara o tempo total do teste
         double tempoTeste = 0;
-        
+
         //Realiza os testes para as quantidades das rainhas especificadas no vetor
         for (int qtdeR = 0; qtdeR < qtdeRainhasTeste.length; qtdeR++) {
 
-            int qRainha = qtdeRainhasTeste[qtdeR];            
+            int qRainha = qtdeRainhasTeste[qtdeR];
 
             //Realiza a repeticao do teste para a quantidade de rainhas    
             for (int qtdeT = 0; qtdeT < repeticoesTeste.length; qtdeT++) {
 
                 println("Execuntando com " + qRainha + " rainhas por " + repeticoesTeste[qtdeT] + " vezes.");
-                
+
                 //Zera o numero de solucoes
                 solucoes = 0;
 
@@ -529,25 +602,12 @@ public class HeuristicaAlgoritmoGeneticoVetor {
 
                     //Executa o gc antes de cada teste
                     System.gc();
-                    
-                    //Zera o tempo de inicio da vez
-                    long tempo = 0;
-                    
-                    //Pega o tempo corrente
-                    tempo = System.currentTimeMillis();
 
-                    //Parametros do algoritmo genetico
-                    //Quantidade de geracoes
-                    int qtdeGeracoes = 300000;
-                    //Tamanho da populacao
-                    int tamanhoIndividuo = 20;
-                    //Probabilidade de mutacao dos individuos
-                    double probabilidadeMutacao = 0.15;                   
-                    //Incializa o gerador de numeros aleatorios
-                    randomico = new Random();
-                    
+                    //Pega o tempo corrente
+                    long tempo = System.currentTimeMillis();
+
                     //Executa a solucao do algoritmo
-                    algoritmoGenetico(qRainha, qtdeGeracoes, tamanhoIndividuo,probabilidadeMutacao);
+                    algoritmoGenetico(qRainha, qtdeGeracoes, tamanhoIndividuo, probabilidadeMutacao);
 
                     //Pega o tempo final do processamento da vez
                     tempo = System.currentTimeMillis() - tempo;
@@ -562,4 +622,128 @@ public class HeuristicaAlgoritmoGeneticoVetor {
         }
         System.out.println("O tempo total do teste e " + tempoTeste + " milisegundos.");
     }
+    
+    
+     public static boolean eEstadoObjetivo(int[] individuo) {
+        if (paresAtacados(individuo) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //linha
+    public static int ataquesHorizontal(int[][] tabuleiro, int linha, int coluna) {
+        int ataque = 0;
+        // verificar na linha da rainha
+        for (int i = 0; i < qtdeRainha; i++) {
+            if (i != linha) {
+                //Posicao ocupada    
+                if (tabuleiro[i][coluna] == 1) {
+                    ataque = ataque + 1;
+                }
+            }
+        }
+        return ataque;
+    }
+
+    public static int ataques(int[][] tabuleiro, int linha, int coluna) {
+        int ret = 0;
+        ret = ret + ataquesVertical(tabuleiro, linha, coluna);
+        ret = ret + ataquesHorizontal(tabuleiro, linha, coluna);
+        ret = ret + ataquesDiagonal(tabuleiro, linha, coluna);
+        return ret;
+    }
+
+    //coluna    
+    public static int ataquesVertical(int[][] tabuleiro, int linha, int coluna) {
+        int ataque = 0;
+        // verificar na linha da rainha
+        for (int j = 0; j < qtdeRainha; j++) {
+            if (j != coluna) {
+                //Posicao ocupada        
+                if (tabuleiro[linha][j] == 1) {
+                    ataque = ataque + 1;
+                }
+            }
+        }
+
+        return ataque;
+    }
+
+    //diagonal
+    public static int ataquesDiagonal(int[][] tabuleiro, int linha, int coluna) {
+        int ataque = 0;
+        // verificar na diagonal1
+        int i = linha - 1;
+        int j = coluna - 1;
+        while (i >= 0 && j >= 0) {
+            if (tabuleiro[i][j] == 1) {
+                ataque = ataque + 1;
+            }
+            i--;
+            j--;
+        }
+
+        // verificar na diagonal2
+        i = linha + 1;
+        j = coluna + 1;
+        while (i < qtdeRainha && j < qtdeRainha) {
+            if (tabuleiro[i][j] == 1) {
+                ataque = ataque + 1;
+            }
+            i++;
+            j++;
+        }
+
+        // Verificar a diagonal3
+        i = linha + 1;
+        j = coluna - 1;
+        while (i < qtdeRainha && j >= 0) {
+            if (tabuleiro[i][j] == 1) {
+                ataque = ataque + 1;
+            }
+            i++;
+            j--;
+        }
+        // Verifica a diagonal4
+        i = linha - 1;
+        j = coluna + 1;
+        while (i >= 0 && j < qtdeRainha) {
+            if (tabuleiro[i][j] == 1) {
+                ataque = ataque + 1;
+            }
+            i--;
+            j++;
+        }
+        return ataque;
+    }
+
+    public static int paresAtacados(int[] individuo) {
+        int ret = 0;
+        int[][] tabuleiro = new int[qtdeRainha][qtdeRainha];
+
+        // Monta o tabuleiro com 0 em posicao vazia e 1 com a rainha
+        for (int i = 0; i < qtdeRainha; i++) {
+            int posicaoRainha = individuo[i];
+            for (int j = 0; j < qtdeRainha; j++) {
+                if (posicaoRainha == j) {
+                    tabuleiro[i][j] = 1;
+                } else {
+                    tabuleiro[i][j] = 0;
+                }
+            }
+        }
+        int soma = 0;
+        for (int i = 0; i < qtdeRainha - 1; i++) {
+            for (int j = i + 1; j < qtdeRainha; j++) {
+                if (tabuleiro[i][j] == 1) {
+                    soma = soma + ataques(tabuleiro, i, j);                    
+                }
+            }
+        }
+System.out.println("Total ataques:"+ soma);
+        return soma;
+    }
+
 }

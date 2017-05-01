@@ -16,7 +16,7 @@ public class HeuristicaHillClimbing {
     private static Random randomico = new Random();
 
     //Habilita ou desabilida a saida dos dados de impressao
-    private static boolean desabilidarImpressao = false;
+    private static boolean desabilidarImpressao = true;
 
     /**
      * Trata a saida de dados
@@ -339,10 +339,12 @@ public class HeuristicaHillClimbing {
 
     public static void main(String[] args) {
 
+        System.out.println("HillClimbing");
+        
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4, 6, 8};
+        int qtdeRainhasTeste[] = {4, 6, 8, 10};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {1};
+        int repeticoesTeste[] = {10};
 
         //Parametros do algoritmo genetico
         //Quantidade de geracoes

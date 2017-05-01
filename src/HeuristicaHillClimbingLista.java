@@ -266,7 +266,6 @@ public class HeuristicaHillClimbingLista {
             }
         }
         boolean ret = false;
-        //if ((cont == 0) && (getNumeroRainhasTabuleiro(tabuleiro) == individuo.length)) {
         if (cont == 0) {
             ret = true;
         }

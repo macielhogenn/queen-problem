@@ -1,9 +1,6 @@
-
 /**
  *
- *  http://www.ic.unicamp.br/~zanoni/mc102/2013-1s/aulas/aula22.pdf
- *
- * @author osmar
+ * @author osmar e osmar
  *
  * O programa utiliza o metodo de backtraking para buscar a solucao do problema,
  * movendo as rainhas a frente e retornando quando for impossivel achar a
@@ -130,10 +127,10 @@ public class ForcaBrutaBackTracking {
             for (int i = 0; i < qtdeRainha; i++) {
                 // Coloca uma nova rainha na posicao [k]                
                 rainhas[k] = i;
-
                 if (valida(rainhas, k)) {
+                    //Avanca para a proxima linha
                     backTracking(rainhas, k + 1);
-                }
+                }                
             }
         }
     }
@@ -170,11 +167,13 @@ public class ForcaBrutaBackTracking {
      * @param args
      */
     public static void main(String args[]) {
+        
+        System.out.println("BackTracking");
 
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4, 6, 8};
+        int qtdeRainhasTeste[] = {4, 6, 8, 10};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5, 10};
+        int repeticoesTeste[] = {10};
 
         //Declara o tempo total do teste
         double tempoTeste = 0;
@@ -201,12 +200,9 @@ public class ForcaBrutaBackTracking {
 
                     //Executa o gc antes de cada teste
                     System.gc();
-                    
-                    //Zera o tempo de inicio da vez
-                    long tempo = 0;
-                    
+                                        
                     //Pega o tempo corrente
-                    tempo = System.currentTimeMillis();
+                    long tempo = System.currentTimeMillis();
 
                     //Executa a solucao do algoritmo
                     backTracking(rainhas, 0);

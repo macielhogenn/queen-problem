@@ -1,13 +1,8 @@
-
 /**
- *  http://www.ic.unicamp.br/~zanoni/mc102/2013-1s/aulas/aula22.pdf
- *
- * @author osmar
+ * @author osmar e maciel
  *
  * O programa utiliza o metodo de permutacao para gerar todas as solucoes do problema,
- *
  * Utiliza um vetor para armazenar as posicoes das rainhas
- *
  *
  * Forca bruta por permutacao
  *
@@ -56,7 +51,7 @@ public class ForcaBrutaPermutacao {
      *
      * @return true se a rainha [k] nao for atacada nas posicoes ja atacadas por
      * rainhas previamente inseridas
-     */
+     */      
     public static boolean valida(int[] rainhas, int k) {
         int x, y;
         for (int i = 0; i < k; i++) {
@@ -110,6 +105,7 @@ public class ForcaBrutaPermutacao {
         //Recupera a quantidade de rainhas
         int qtdeRainha = rainhas.length;
 
+        //Se k e igual da quantidade rainhas cheguei no final da linha
         if (k == qtdeRainha) {
             if (valida(rainhas, k)) {
                 //Imprime o tabuleiro quando encontrar a solucao
@@ -118,11 +114,13 @@ public class ForcaBrutaPermutacao {
                 solucoes = solucoes + 1;
             }
         } else {
+            //Percorre o vetor de rainhas
             for (int i = 0; i < qtdeRainha; i++) {
                 //realiza a permutacao somente para elementos não utilizados
                 if (usado[i] == 0) {
                     usado[i] = 1;
                     rainhas[k] = i;
+                    //Avanca para proxima linha (k=k+1)
                     permutacao(rainhas, usado, k + 1);
                     usado[i] = 0;
                 }
@@ -162,10 +160,12 @@ public class ForcaBrutaPermutacao {
      */
     public static void main(String args[]) {
         
+        System.out.println("Permutacao");
+        
         //Especifica a quantidade de rainhas serem testadas
-        int qtdeRainhasTeste[] = {4,6,8};
+        int qtdeRainhasTeste[] = {4, 6, 8, 10};
         //Especifica o numero de vezes a se realizado com cada qtde de rainhas
-        int repeticoesTeste[] = {5,10};
+        int repeticoesTeste[] = {10};
         
         //Declara o tempo total do teste
         double tempoTeste = 0;
